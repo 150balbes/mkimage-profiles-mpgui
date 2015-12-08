@@ -1,0 +1,31 @@
+kdebase
+kde-icon-theme-nuvola
+tango-icon-theme-extras
+kkbswitch
+kdegraphics-ksnapshot
+kdegraphics-kview
+kdeutils-laptop
+kdepim-akregator
+kdeutils-ark
+#kdebluetooth
+kdeutils-kcalc
+kdegraphics-kpdf
+kde-i18n-ru
+kde-i18n-uk
+kdeaddons-konqueror
+krusader
+#digikam
+#digikam-image-plugins
+kaffeine
+kdemultimedia-kmix
+amarok
+
+# rom_as@ says it's still needed
+hal
+arts
+
+# Speccyfighter says it's needed too
+hmount
+
+# how could this get skipped?
+filelight

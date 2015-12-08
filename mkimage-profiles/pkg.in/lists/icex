@@ -1,0 +1,57 @@
+# list icex
+
+icewm-x-githubmod
+icewm-settings-altlinux
+icewm-x-startup
+#icewm-x-startup-delay
+icewm-x-startup-xxkb-tray
+icewm-x-startup-idesk
+icewm-x-startup-simple-sound
+icewm-x-startup-tray_mixer_plus
+icewm-x-startup-update-menus
+icewm-x-startup-xscreensaver
+#icewm-x-startup-mount-tray
+#udisks2
+idesk
+idesk-icon-icewm
+mnt
+gpaint
+rpminstall
+wget
+lxde-lxrandr
+screengrab
+alterator-sysinfo
+alterator-x11
+alterator-firsttime
+alterator-logs
+alterator-updates
+alterator-control
+alterator-datetime
+alterator-net-iptables
+alterator-services
+xterm-black
+spacefm
+spacefm-plugins2
+udevil
+apt-conf-club-s
+myppp
+
+tango-icon-theme
+tango-icon-theme-extras
+rosa-imagewriter
+file-roller
+alsamixer-qt4
+galculator
+atril-gtk
+atril-gtk-djvu
+
+# dell
+nano-
+
+# add 20151202
+icewm-theme-WinClassic2
+icewm-theme-elegance_ice
+icewm-theme-silverxp
+
+# add 20151207
+gimmage

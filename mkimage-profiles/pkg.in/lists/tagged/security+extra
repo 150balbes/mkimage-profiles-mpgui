@@ -1,0 +1,19 @@
+apg
+#chkrootkit
+john
+hashalot
+#logcheck
+md5deep
+ssdeep
+pwgen
+
+# integrity check
+osec
+osec-cronjob
+osec-mailreport
+
+# hardware reliability
+mcelog
+
+# networking
+chaosreader

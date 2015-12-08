@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# setup stage2 as init
+mv -f /usr/sbin/install2-init /sbin/init

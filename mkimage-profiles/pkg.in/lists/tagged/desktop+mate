@@ -1,0 +1,8 @@
+mate-full
+
+altlinux-freedesktop-menu-mate
+
+### should be dropped at some stage; see bugreports within this thread:
+# http://lists.altlinux.org/pipermail/sisyphus/2012-August/358079.html
+iso-codes
+tzdata
