@@ -63,7 +63,7 @@ cp -a * %buildroot%mpdir
 
 %changelog
 * Mon Dec 10 2015 Oleg Ivanov <Leo-sp150@yandex.ru> 1.1.81-alt1.mpgui
-- add mp-gui
+- add mp-gui distrohelper
 
 * Mon Dec 07 2015 Michael Shigorin <mike@altlinux.org> 1.1.81-alt1
 - regular fixes
