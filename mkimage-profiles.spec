@@ -1,6 +1,6 @@
 Name: mkimage-profiles
-Version: 1.1.80
-Release: alt5.mpgui
+Version: 1.1.81
+Release: alt1.mpgui
 
 Summary: ALT Linux based distribution metaprofile
 License: GPLv2+
@@ -62,11 +62,11 @@ cp -a * %buildroot%mpdir
 %mpdir/
 
 %changelog
-* Mon Dec 08 2015 Oleg Ivanov <Leo-sp150@yandex.ru> 1.1.80-alt5.mpgui
-- add icex default theme
+* Mon Dec 10 2015 Oleg Ivanov <Leo-sp150@yandex.ru> 1.1.81-alt1.mpgui
+- add mp-gui
 
-* Mon Nov 30 2015 Oleg Ivanov <Leo-sp150@yandex.ru> 1.1.80-alt4.mpgui
-- add support mp-gui
+* Mon Dec 07 2015 Michael Shigorin <mike@altlinux.org> 1.1.81-alt1
+- regular fixes
 
 * Mon Nov 30 2015 Michael Shigorin <mike@altlinux.org> 1.1.80-alt1
 - pre-starterkit cleanups
