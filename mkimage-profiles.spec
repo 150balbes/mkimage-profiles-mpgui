@@ -1,6 +1,6 @@
 Name: mkimage-profiles
 Version: 1.1.81
-Release: alt1.mpgui
+Release: alt2.mpgui
 
 Summary: ALT Linux based distribution metaprofile
 License: GPLv2+
@@ -62,6 +62,9 @@ cp -a * %buildroot%mpdir
 %mpdir/
 
 %changelog
+* Mon Dec 11 2015 Oleg Ivanov <Leo-sp150@yandex.ru> 1.1.81-alt2.mpgui
+- add icewm-theme-AltClearlooks
+
 * Mon Dec 10 2015 Oleg Ivanov <Leo-sp150@yandex.ru> 1.1.81-alt1.mpgui
 - add mp-gui distrohelper
 
