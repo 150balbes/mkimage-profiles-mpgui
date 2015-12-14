@@ -1,16 +1,16 @@
 # list icex
 
-icewm-x-githubmod
-icewm-settings-altlinux
-icewm-x-startup
-#icewm-x-startup-delay
-icewm-x-startup-xxkb-tray
-icewm-x-startup-idesk
-icewm-x-startup-simple-sound
-icewm-x-startup-tray_mixer_plus
-icewm-x-startup-update-menus
-icewm-x-startup-xscreensaver
-#icewm-x-startup-mount-tray
+icex
+icex-settings-alt
+icex-startup
+#icex-startup-delay
+icex-startup-xxkb-tray
+icex-startup-idesk
+icex-startup-simple-sound
+icex-startup-tray_mixer_plus
+icex-startup-update-menus
+icex-startup-xscreensaver
+#icex-startup-mount-tray
 #udisks2
 idesk
 idesk-icon-icewm
@@ -57,4 +57,4 @@ icewm-theme-silverxp
 gimmage
 
 # add 20151208
-icewm-theme-default
+icex-theme-default
