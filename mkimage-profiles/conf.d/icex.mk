@@ -8,6 +8,7 @@ distro/regular-icex: distro/.regular-gtk +power \
 	use/stage2/net-eth use/net-eth/dhcp
 	@$(call add,LIVE_LISTS,icex)
 	@$(call add,LIVE_LISTS,Users-pkg)
+	@$(call set,THE_IMAGEWRITER,rosa-imagewriter)
 
 distro/regular-icex-builder: distro/regular-icex use/dev/builder/full use/live/repo/online
 	@$(call add,LIVE_KMODULES,virtualbox)
