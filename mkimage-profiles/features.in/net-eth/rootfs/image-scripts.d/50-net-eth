@@ -22,7 +22,7 @@ write_iface() {
 	append=
 	case "$proto" in
 	dhcp)
-		append="DHCP_TIMEOUT=3"
+		append="DHCP_TIMEOUT=7"
 		;;
 	static)
 		[ -n "$ipv4addr" ] || fatal "ipv4addr missing"
