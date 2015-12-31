@@ -1,5 +1,5 @@
 WindowMaker
-wdm
+
 wmCalClock
 wmsm
 WMCPULoad
@@ -41,7 +41,7 @@ xterm-black
 spacefm
 spacefm-plugins2
 udevil
-apt-conf-club-s
+
 myppp
 
 tango-icon-theme
@@ -66,10 +66,10 @@ gst-plugins-base1.0
 file-roller
 gimp
 gdb
-gcc5-c++
+
 qt4
 qt4-designer
-qt4-glib-devel
+
 qt4-settings
 qt4-styles-qtcurve
 qt-creator
@@ -143,3 +143,29 @@ wmvolman
 
 # add 20151210
 distrohelper
+
+# remove 20151215 gcc5-c qt4-glib-devel apt-conf-club-s
+# add 20151215
+arduino_full
+librecad
+apt-conf-club-p7
+
+# remove 20151217 wdm
+#lxdm-WindowMaker
+#autologin
+#installer-feature-no-xconsole
+#add 20151217
+tango-icon-theme
+tango-icon-theme-extras
+
+# add 20151218
+distrohelper
+fluxbox
+wifi-radar
+# remove 20151218
+#openbox
+#ktechlab
+# add 20151219
+NetworkManager
+NetworkManager-applet-gtk
+etcnet
