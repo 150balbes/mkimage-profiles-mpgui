@@ -1,6 +1,6 @@
 Name: mkimage-profiles
 Version: 1.1.81
-Release: alt4.mpgui
+Release: alt5.mpgui
 
 Summary: ALT Linux based distribution metaprofile
 License: GPLv2+
@@ -62,6 +62,9 @@ cp -a * %buildroot%mpdir
 %mpdir/
 
 %changelog
+* Mon Jan 02 2015 Oleg Ivanov <Leo-sp150@yandex.ru> 1.1.81-alt5.mpgui
+- add theme WinClassic2 Elegance_ice SilverXP
+
 * Mon Dec 31 2015 Oleg Ivanov <Leo-sp150@yandex.ru> 1.1.81-alt4.mpgui
 - edit DHCP_TIMEOUT=7
 
