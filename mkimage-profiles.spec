@@ -62,7 +62,7 @@ cp -a * %buildroot%mpdir
 %mpdir/
 
 %changelog
-* Mon Jan 02 2015 Oleg Ivanov <Leo-sp150@yandex.ru> 1.1.81-alt5.mpgui
+* Mon Jan 02 2016 Oleg Ivanov <Leo-sp150@yandex.ru> 1.1.81-alt5.mpgui
 - add theme WinClassic2 Elegance SilverXP
 
 * Mon Dec 31 2015 Oleg Ivanov <Leo-sp150@yandex.ru> 1.1.81-alt4.mpgui
