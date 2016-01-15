@@ -189,3 +189,21 @@ wmaker-theme-club11
 wmaker-theme-club12
 wmaker-theme-cl_lumen_blue
 water-world
+# add 20160107
+#free-cad
+qgis
+qgis-mapserver
+qgis-grass
+fldigi
+# add 20160108
+chkconfig
+livecd-admin-cups
+cups
+foomatic
+gutenprint-CUPS
+system-config-printer
+hplip-hpcups
+hplip-hpcups-PPDs
+hplip-hpijs-PPDs
+#udev-extras
+cups-pdf

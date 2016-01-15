@@ -211,10 +211,11 @@ distro/regular-rescue: distro/.regular-base use/rescue/rw use/luks \
 	use/branding use/efi/refind use/efi/shell use/efi/memtest86 \
 	use/hdt use/syslinux/ui/menu use/syslinux/timeout/600 \
 	use/syslinux/rescue_fm.cfg use/syslinux/rescue_remote.cfg \
-	use/mediacheck test/rescue/no-x11 +wireless +sysvinit
+	use/firmware/qlogic use/mediacheck test/rescue/no-x11 \
+	+wireless +sysvinit
 	@$(call set,KFLAVOURS,un-def)
 	@$(call add,RESCUE_PACKAGES,gpm livecd-net-eth)
-	@$(call add,RESCUE_LISTS,$(call tags,base smartcard))
+	@$(call add,RESCUE_LISTS,$(call tags,base && (smartcard || bench)))
 	@$(call add,RESCUE_LISTS,$(call tags,network security))
 
 distro/regular-sysv-tde: distro/.regular-install-x11 \
@@ -229,7 +230,7 @@ distro/regular-sysv-tde: distro/.regular-install-x11 \
 	@$(call add,MAIN_PACKAGES,anacron man-whatis usb-modeswitch)
 
 distro/.regular-server: distro/.regular-install \
-	use/server/mini use/rescue/base use/cleanup/x11
+	use/server/mini use/firmware/qlogic use/rescue/base use/cleanup/x11
 	@$(call add,THE_LISTS,$(call tags,regular server))
 	@$(call add,MAIN_PACKAGES,aptitude)
 	@$(call set,INSTALLER,altlinux-server)

@@ -1,6 +1,6 @@
 Name: mkimage-profiles
-Version: 1.1.81
-Release: alt6.mpgui
+Version: 1.1.82
+Release: alt1.mpgui
 
 Summary: ALT Linux based distribution metaprofile
 License: GPLv2+
@@ -62,6 +62,12 @@ cp -a * %buildroot%mpdir
 %mpdir/
 
 %changelog
+* Mon Jan 15 2016 Oleg Ivanov <Leo-sp150@yandex.ru> 1.1.82-alt1.mpgui
+- new Coderlive
+
+* Mon Jan 11 2016 Michael Shigorin <mike@altlinux.org> 1.1.82-alt1
+- firmwarez
+
 * Mon Jan 03 2016 Oleg Ivanov <Leo-sp150@yandex.ru> 1.1.81-alt6.mpgui
 - add gdb nemiver
 - add new files Coderlive
