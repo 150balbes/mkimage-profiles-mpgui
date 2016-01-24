@@ -19,6 +19,7 @@ abiword-3.0
 gnumeric
 LibreOffice
 LibreOffice-langpack-ru
+java-1.6.0-sun
 
 remind
 ted
@@ -50,3 +51,5 @@ qutim-lang-ru
 claws-mail
 thunderbird
 thunderbird-ru
+
+mirage
