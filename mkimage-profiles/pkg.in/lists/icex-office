@@ -6,6 +6,7 @@ qt4-styles-qtcurve
 alsamixer-qt4
 firefox
 firefox-ru
+firefox-pepperflash
 atril-gtk
 atril-gtk-djvu
 palemoon-full
@@ -14,10 +15,10 @@ doublecmd
 
 opera
 
-abiword
+abiword-3.0
 gnumeric
-libreoffice
-libreoffice-langpack-ru
+LibreOffice
+LibreOffice-langpack-ru
 
 remind
 ted
@@ -39,9 +40,6 @@ chromium
 chromium-pepperflash
 dillo
 epiphany
-firefox
-firefox-ru
-firefox-pepperflash
 midori
 qupzilla
 
