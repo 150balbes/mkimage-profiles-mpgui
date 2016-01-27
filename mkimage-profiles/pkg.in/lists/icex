@@ -14,6 +14,7 @@ icex-startup-xscreensaver
 #icex-startup-mount-tray
 #udisks2
 idesk
+idesk-x-set
 mnt
 gpaint
 rpminstall
