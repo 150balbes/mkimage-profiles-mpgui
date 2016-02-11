@@ -1,5 +1,5 @@
 Name: mkimage-profiles
-Version: 1.1.83
+Version: 1.1.84
 Release: alt1.mpgui
 
 Summary: ALT Linux based distribution metaprofile
@@ -62,8 +62,17 @@ cp -a * %buildroot%mpdir
 %mpdir/
 
 %changelog
+* Mon Feb 11 2016 Oleg Ivanov <Leo-sp150@yandex.ru> 1.1.84-alt1.mpgui
+- new ver
+
+* Mon Feb 08 2016 Michael Shigorin <mike@altlinux.org> 1.1.84-alt1
+- %name(7) :)
+
 * Mon Jan 27 2016 Oleg Ivanov <Leo-sp150@yandex.ru> 1.1.83-alt1.mpgui
 - new ver
+
+* Mon Jan 25 2016 Michael Shigorin <mike@altlinux.org> 1.1.83-alt1
+- openssh 7.x (see also #31716)
 
 * Mon Jan 24 2016 Oleg Ivanov <Leo-sp150@yandex.ru> 1.1.82-alt4.mpgui
 - add regular-icex-office

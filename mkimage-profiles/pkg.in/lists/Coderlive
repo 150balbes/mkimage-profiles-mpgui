@@ -173,7 +173,7 @@ NetworkManager-applet-gtk
 etcnet
 # add 20160101
 qucs
-electric
+#electric
 
 wmaker-theme-club01
 wmaker-theme-club02
@@ -207,3 +207,34 @@ hplip-hpcups-PPDs
 hplip-hpijs-PPDs
 #udev-extras
 cups-pdf
+# add 20160123
+pcb
+pcb-doc
+pcb-examples
+pcb-library
+kicad
+kicad-doc
+# add 20160124
+ponyprog2000
+avrdude
+avrdude-docs
+avr-binutils
+avra
+avr-gcc
+avr-gcc-c++
+avr-libc
+avr-libc-doc
+geda
+geda-gaf
+geda-gattrib
+geda-gnetlist
+geda-gschem
+geda-gsymcheck
+geda-symbols
+geda-utils
+geda-xgsch2pcb
+libgeda
+# add 20160130
+fidocadj
+shotwell
+#remove electric

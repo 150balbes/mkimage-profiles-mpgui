@@ -25,6 +25,7 @@ distro/regular-Coderlive:   distro/.regular-gtk use/live/ru \
 	@$(call add,LIVE_PACKAGES,cups system-config-printer livecd-admin-cups)
 	@$(call add,LIVE_KMODULES,staging)
 	@$(call add,DEFAULT_SERVICES_ENABLE,cups)
+	@$(call set,SQUASHFS,fast)
 	
 distro/regular-Coderlive_old: distro/.regular-gtk use/dev/builder/full use/live/repo/online +power \
 	use/browser/seamonkey/i18n use/live/base use/firmware \
