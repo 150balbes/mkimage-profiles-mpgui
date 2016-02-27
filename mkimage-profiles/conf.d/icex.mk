@@ -2,7 +2,7 @@
 
 ifeq (distro,$(IMAGE_CLASS))
 
-distro/regular-icex: distro/.regular-gtk +power \
+distro/regular-icex: distro/.regular-gtk +power use/live/ru \
 	use/browser/seamonkey/i18n use/live/base use/firmware \
 	use/live/rw use/live/textinstall use/isohybrid use/syslinux/timeout/30 \
 	use/stage2/net-eth use/net-eth/dhcp
