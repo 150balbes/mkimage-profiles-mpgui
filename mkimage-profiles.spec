@@ -1,6 +1,6 @@
 Name: mkimage-profiles
 Version: 1.1.85
-Release: alt2.mpgui
+Release: alt3.mpgui
 
 Summary: ALT Linux based distribution metaprofile
 License: GPLv2+
@@ -62,6 +62,9 @@ cp -a * %buildroot%mpdir
 %mpdir/
 
 %changelog
+* Mon Feb 29 2016 Oleg Ivanov <Leo-sp150@yandex.ru> 1.1.85-alt3.mpgui
+- edit icex.mk
+
 * Mon Feb 27 2016 Oleg Ivanov <Leo-sp150@yandex.ru> 1.1.85-alt2.mpgui
 - edit icex
 
