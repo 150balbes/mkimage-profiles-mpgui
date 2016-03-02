@@ -11,7 +11,7 @@ Source: %name-%version.tar
 Packager: Oleg Ivanov <Leo-sp150@yandex.ru>
 
 BuildArch: noarch
-BuildRequires: rsync asciidoc-a2x fop fonts-ttf-dejavu
+BuildRequires: rsync
 
 Requires: rsync git-core
 Requires: time schedutils sfdisk
@@ -22,14 +22,6 @@ Requires: mkimage-preinstall
 
 %define mpdir %_datadir/%name
 %add_findreq_skiplist %mpdir/*.in/*
-
-%def_with doc
-%define docs $HOME/docs
-
-%package doc
-Summary: %name documentation
-Group: Development/Documentation
-%{?_with_doc:BuildRequires: java /proc}
 
 %description
 mkimage-profiles is a collection of bits and pieces useful for
@@ -57,37 +49,18 @@ and modest metaprogramming (some code generation and introspection),
 welcome to the metaprofile itself; read the docs and get the git:
 %url
 
-%description doc
-This package holds developer docs for %name
-as a book in HTML and PDF formats.
 
 %prep
 %setup
 
 %build
-%if_with doc
-make BUILDDIR=%docs docs
-%endif
 
 %install
 mkdir -p %buildroot{%mpdir,%_man7dir}
 cp -a * %buildroot%mpdir
-%if_with doc
-mv %buildroot%mpdir/doc/mkimage-profiles.7 %buildroot%_man7dir/
-%endif
 
 %files
 %mpdir/
-%if_with doc
-%_man7dir/*
-%endif
-
-%if_with doc
-%files doc
-%doc README
-%doc QUICKSTART
-%doc %docs/*
-%endif
 
 %changelog
 * Mon Mar 02 2016 Oleg Ivanov <Leo-sp150@yandex.ru> 1.1.86-alt1.mpgui
