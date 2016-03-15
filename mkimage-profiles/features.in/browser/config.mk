@@ -24,6 +24,10 @@ use/browser/konqueror4: use/browser
 use/browser/firefox/esr: use/browser
 	@$(call set,FX_FLAVOUR,-esr)
 
+use/browser/firefox/h264: use/browser/firefox
+	@$(call add,THE_BROWSER,gst-libav)
+	@$(call add,THE_BROWSER,gst-plugins-base1.0 gst-plugins-good1.0)
+
 use/browser/firefox/live: use/browser/firefox
 	@$(call add,THE_BROWSER,livecd-firefox)
 
@@ -46,4 +50,4 @@ use/browser/plugin/flash: use/browser
 	@$(call add,THE_PACKAGES,mozilla-plugin-adobe-flash)
 
 use/browser/plugin/java: use/browser
-	@$(call add,THE_PACKAGES,mozilla-plugin-java-1.7.0-openjdk)
+	@$(call add,THE_PACKAGES,mozilla-plugin-java-1.8.0-openjdk)

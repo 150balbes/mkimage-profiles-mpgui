@@ -6,13 +6,15 @@ distro/.regular-bare: distro/.base +net-eth use/kernel/net
 	@$(call try,SAVE_PROFILE,yes)
 
 # base target (for most images)
-distro/.regular-base: distro/.regular-bare use/memtest +efi; @:
+distro/.regular-base: distro/.regular-bare use/vmguest use/memtest +efi; @:
 
 # graphical target (not enforcing xorg drivers or blobs)
 distro/.regular-x11: distro/.regular-base +vmguest +wireless \
 	use/live/x11 use/live/install use/live/suspend \
 	use/live/repo use/live/rw use/luks use/x11/wacom use/ntp/client \
-	use/branding use/browser/firefox/live use/browser/firefox/i18n
+	use/branding use/browser/firefox/live use/browser/firefox/i18n \
+	use/browser/firefox/h264
+	@$(call add,LIVE_PACKAGES,volumes-profile-regular)
 	@$(call add,LIVE_LISTS,$(call tags,(base || desktop) && regular))
 	@$(call add,LIVE_LISTS,$(call tags,base rescue))
 	@$(call add,LIVE_PACKAGES,gpm livecd-install-apt-cache)
@@ -58,6 +60,7 @@ distro/.regular-jeos: distro/.regular-bare use/isohybrid +sysvinit \
 	use/install2/repo use/install2/packages \
 	use/install2/cleanup/everything use/install2/cleanup/kernel/everything \
 	use/cleanup/jeos use/net/etcnet use/power/acpi/button
+	@$(call add,STAGE2_BOOTARGS,vga=0)
 	@$(call add,BASE_KMODULES,guest scsi vboxguest)
 	@$(call add,BASE_PACKAGES,make-initrd-mdadm cpio)
 	@$(call set,INSTALLER,altlinux-generic)
@@ -79,7 +82,6 @@ distro/regular-jeos: distro/.regular-jeos use/cleanup/jeos/full \
 distro/regular-jeos-ovz: distro/.regular-jeos \
 	use/server/ovz-base use/control/server/ldv use/firmware
 	@$(call add,THE_PACKAGES,ipmitool lm_sensors3 mailx)
-	@$(call add,STAGE2_BOOTARGS,xdriver=vesa)
 
 distro/.regular-install-x11: distro/.regular-install \
 	use/install2/suspend mixin/regular-desktop +vmguest +wireless
@@ -174,7 +176,7 @@ distro/regular-kde4: distro/.regular-desktop use/x11/kde4/nm use/x11/kdm4 \
 	use/browser/konqueror4 use/fonts/zerg use/domain-client/full \
 	use/net/nm/mmgui +pulse +plymouth
 	@$(call add,THE_LISTS,$(call tags,regular kde4))
-	@$(call add,THE_PACKAGES,volumes-profile-lite)
+	@$(call add,THE_PACKAGES,fonts-ttf-levien-inconsolata)
 	@$(call set,THE_IMAGEWRITER,rosa-imagewriter)
 	@$(call add,DEFAULT_SERVICES_ENABLE,prefdm)
 
@@ -250,7 +252,8 @@ distro/regular-server-hyperv: distro/.regular-server-managed
 	@$(call set,KFLAVOURS,un-def)
 	@$(call add,INSTALL2_PACKAGES,ntfs-3g)
 	@$(call add,THE_PACKAGES,hyperv-daemons)
-	@$(call add,DEFAULT_SERVICES_DISABLE,bridge cpufreq-simple)
+	@$(call add,DEFAULT_SERVICES_DISABLE,bridge smartd)
+	@$(call add,DEFAULT_SERVICES_DISABLE,cpufreq-simple powertop)
 
 distro/regular-builder: distro/.regular-bare \
 	use/dev/builder/full +sysvinit +efi +power \

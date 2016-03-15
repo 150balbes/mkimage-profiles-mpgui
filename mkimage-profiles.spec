@@ -1,5 +1,5 @@
 Name: mkimage-profiles
-Version: 1.1.86
+Version: 1.1.87
 Release: alt1.mpgui
 
 Summary: ALT Linux based distribution metaprofile
@@ -63,6 +63,12 @@ cp -a * %buildroot%mpdir
 %mpdir/
 
 %changelog
+* Mon Mar 15 2016 Oleg Ivanov <Leo-sp150@yandex.ru> 1.1.87-alt1.mpgui
+- init v 1.1.87
+
+* Mon Mar 14 2016 Michael Shigorin <mike@altlinux.org> 1.1.87-alt1
+- starterkits-20160312
+
 * Mon Mar 02 2016 Oleg Ivanov <Leo-sp150@yandex.ru> 1.1.86-alt1.mpgui
 - init v 1.1.86
 
