@@ -10,14 +10,25 @@ use/install2: use/stage2 sub/stage2@install2 use/metadata \
 	@$(call add,INSTALL2_PACKAGES,branding-$$(BRANDING)-alterator)
 	@$(call add,BASE_PACKAGES,branding-$$(BRANDING)-release)
 	@$(call add,BASE_PACKAGES,installer-common-stage3)
+	@$(call add,BASE_PACKAGES,glibc-gconv-modules)	# for guile22
 	@$(call add,BASE_LISTS,$(call tags,basesystem))
 	@$(call xport,BASE_BOOTLOADER)
 	@$(call xport,INSTALL2_CLEANUP_PACKAGES)
 	@$(call xport,INSTALL2_CLEANUP_KDRIVERS)
 
 # doesn't use/install2/fs on purpose (at least so far)
-use/install2/full: use/install2/packages use/install2/vmguest \
-	use/syslinux/localboot.cfg use/syslinux/ui/menu use/bootloader; @:
+use/install2/full: \
+	use/install2/packages use/install2/vmguest use/install2/tools \
+	use/syslinux/localboot.cfg use/syslinux/ui/menu use/bootloader
+	@$(call add,INSTALL2_PACKAGES,xorg-drv-synaptics)
+	@$(call add,INSTALL2_PACKAGES,xorg-drv-libinput)
+
+# for distributions with their own -stage3 installer part
+use/install2/stage3: use/install2
+	@$(call add,BASE_PACKAGES,installer-$$(INSTALLER)-stage3)
+
+# just an alias, better use its endpoint directly
+use/install2/fonts: use/fonts/install2; @:
 
 # see also use/vmguest
 use/install2/vmguest: use/install2/kvm use/install2/vbox use/install2/vmware; @:
@@ -40,16 +51,28 @@ use/install2/kvm:
 # virtualbox guest support for installer
 use/install2/vbox:
 	@$(call add,STAGE1_KMODULES,virtualbox-addition vboxguest)
+	@$(call add,INSTALL2_PACKAGES,xorg-drv-vboxvideo)
 
 # see also use/vmguest/vmware
 use/install2/vmware:
 	@$(call add,STAGE1_KMODULES,vmware)
 	@$(call add,STAGE1_KMODULES,scsi)	# mptspi in led-ws
-	@$(call add,INSTALL2_PACKAGES,xorg-drv-vmware)
+	@$(call add,INSTALL2_PACKAGES,xorg-drv-vmware xorg-drv-vmmouse)
 
 # NB: sort of conflicts with use/install2/cleanup/vnc
 use/install2/vnc:
-	@$(call add,INSTALL2_PACKAGES,x11vnc)
+	@$(call add,INSTALL2_PACKAGES,x11vnc xterm net-tools)
+
+# this one expects external vncviewer to come
+use/install2/vnc/listen: \
+	use/install2/vnc use/syslinux/install-vnc-listen.cfg; @:
+
+# this one connects to a specified vncviewer --listen
+use/install2/vnc/connect: \
+	use/install2/vnc use/syslinux/install-vnc-connect.cfg; @:
+
+# add both bootloader items to be *that* explicit ;-)
+use/install2/vnc/full: use/install2/vnc/listen use/install2/vnc/connect; @:
 
 # filesystems handling
 use/install2/fs: use/install2/xfs use/install2/jfs use/install2/reiserfs; @:
@@ -67,14 +90,18 @@ use/install2/reiserfs:
 use/install2/suspend:
 	@$(call add,INSTALL2_PACKAGES,installer-feature-desktop-suspend-stage2)
 
+# extras
+use/install2/tools:
+	@$(call add,INSTALL2_PACKAGES,pxz)
+
 # when VNC installation is less welcome than a few extra megs
 use/install2/cleanup/vnc:
 	@$(call add,INSTALL2_CLEANUP_PACKAGES,x11vnc xorg-xvfb)
 
 # conflicts with luks feature
 use/install2/cleanup/crypto:
-	@$(call add,INSTALL2_CLEANUP_PACKAGES,gnupg libgpg-error)
-	@$(call add,INSTALL2_CLEANUP_PACKAGES,libgcrypt* libgnutls*)
+	@$(call add,INSTALL2_CLEANUP_PACKAGES,gnupg)
+	@$(call add,INSTALL2_CLEANUP_PACKAGES,libgnutls*)
 
 # leave only cirrus, fbdev, qxl, vesa in vm-targeted images
 use/install2/cleanup/x11-hwdrivers:
@@ -90,7 +117,7 @@ use/install2/cleanup/x11-hwdrivers:
 # massive purge of anything not critical to installer boot (l10n included!)
 use/install2/cleanup/everything: use/install2/cleanup/x11-hwdrivers \
 	use/install2/cleanup/vnc use/install2/cleanup/crypto
-	@$(call add,INSTALL2_CLEANUP_PACKAGES,glibc-gconv-modules glibc-locales)
+	@$(call add,INSTALL2_CLEANUP_PACKAGES,glibc-locales)
 	@$(call add,INSTALL2_CLEANUP_PACKAGES,libX11-locales alterator-l10n)
 	@$(call add,INSTALL2_CLEANUP_PACKAGES,kbd-data kbd console-scripts)
 	@$(call add,INSTALL2_CLEANUP_PACKAGES,shadow-convert)

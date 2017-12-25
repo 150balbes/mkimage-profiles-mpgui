@@ -22,7 +22,7 @@ use/efi/refind: use/efi
 
 use/efi/signed: use/efi
 	@$(call set,EFI_CERT,altlinux)
-	@$(call add,THE_PACKAGES,shim-signed)
+	@$(call add,COMMON_PACKAGES,shim-signed)
 	@$(call add,RESCUE_PACKAGES,openssl pesign sbsigntools)
 
 use/efi/shell: use/efi
@@ -38,6 +38,6 @@ else
 
 # ignore on an unsupported target arch but make it hybrid at least
 use/efi use/efi/signed use/efi/debug \
-  use/efi/refind use/efi/shell use/efi/memtest86: use/isohybrid
+  use/efi/refind use/efi/shell use/efi/memtest86: use/isohybrid; @:
 
 endif

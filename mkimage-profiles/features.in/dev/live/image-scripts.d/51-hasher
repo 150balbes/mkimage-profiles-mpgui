@@ -4,12 +4,9 @@
 ARCH="$(rpm --eval '%_host_cpu')"
 [ -n "$ARCH" ] || exit 2
 
-gray=""
-#"$(echo -ne "\\033[0;37m")"
-white=""
-#"$(echo -ne "\\033[1;37m")"
-cyan=""
-#"$(echo -ne "\\033[1;36m")"
+gray="$(echo -ne "\\033[0;37m")"
+white="$(echo -ne "\\033[1;37m")"
+cyan="$(echo -ne "\\033[1;36m")"
 
 # root
 cat >> /root/.bash_profile << EOF
@@ -49,7 +46,6 @@ TMP="/tmp/.private/$USER"
 if type -t git && type -t su; then
 	su - -c "git config --global user.email $USER@localhost" "$USER"
 	su - -c "git config --global user.name 'live builder'" "$USER"
-	su - -c "git config --global core.editor mcedit" "$USER"
 fi >&/dev/null
 
 # developer should feel comfortable, eh? ;-)
@@ -77,7 +73,7 @@ alias m='cd /usr/share/mkimage-profiles'
 clear
 cat << EOH
 Welcome to live builder environment!
-Here are some ALT Linux package/image build tools prepared for you:
+Here are some ALT package/image build tools prepared for you:
 * ${white}gear${gray}(1) -- see ${cyan}http://en.altlinux.org/gear${gray};
 * ${white}hsh${gray}(1)  -- see ${cyan}http://en.altlinux.org/hasher${gray};
 * ${white}mkimage${gray} -- see ${cyan}http://en.altlinux.org/mkimage${gray};
@@ -107,7 +103,6 @@ echo "rpm-dir file://$HOME/hasher/repo $ARCH hasher" \
 
 mkdir "$HOME/.hasher"
 cat >> "$HOME/.hasher/config" << EOF
-no_sisyphus_check="packager,buildhost,gpg,changelog,description"
 packager="\$(rpm --eval %packager)"
 def_target=$ARCH
 export GCC_USE_CCACHE=1
@@ -123,9 +118,3 @@ echo "allowed_mountpoints=/proc" >> /etc/hasher-priv/system
 
 # requisite
 hasher-useradd "$USER"
-
-# altlinux chown
-chown -R altlinux:altlinux /home/altlinux
-
-# virtualbox
-gpasswd -a altlinux vboxusers

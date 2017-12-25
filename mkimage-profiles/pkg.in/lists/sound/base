@@ -1,4 +1,5 @@
 amixer
 alsa-utils
 aplay
-udev-alsa
+
+alsa-set-initial-options

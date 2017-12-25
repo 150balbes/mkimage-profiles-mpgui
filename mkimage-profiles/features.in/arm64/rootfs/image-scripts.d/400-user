@@ -1,0 +1,6 @@
+#!/bin/sh
+
+useradd -c 'Alt User' altlinux
+echo -e 'altlinux\naltlinux' |passwd altlinux
+
+control su public

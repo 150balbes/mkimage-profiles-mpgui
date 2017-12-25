@@ -3,6 +3,7 @@ rootfiles
 servicectl
 
 # Common
+acl
 coreutils
 glibc-nss
 glibc-utils
@@ -19,3 +20,6 @@ fdisk
 
 # Serial console
 agetty
+
+# Console mouse
+gpm

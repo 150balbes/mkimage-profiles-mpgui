@@ -1,3 +1,4 @@
++x11: use/x11/xorg; @:
 +icewm: use/x11/icewm; @:
 +xmonad: use/x11/xmonad; @:
 +tde: use/x11/tde use/x11/kdm; @:
@@ -6,13 +7,14 @@
 # the very minimal driver set
 use/x11:
 	@$(call add_feature)
-	@$(call add,THE_KMODULES,drm)	# required by recent nvidia.ko as well
 	@$(call add,THE_LISTS,$(call tags,base xorg))
+	@$(call add,THE_KMODULES,drm)	# required by recent nvidia.ko as well
+	@$(call add,THE_KMODULES,$$(NVIDIA_KMODULES) $$(RADEON_KMODULES))
+	@$(call add,THE_PACKAGES,$$(NVIDIA_PACKAGES) $$(RADEON_PACKAGES))
 
 # x86: free drivers for various hardware (might lack acceleration)
 ifeq (,$(filter-out i586 x86_64,$(ARCH)))
-use/x11/xorg: use/x11 use/x11/intel use/firmware
-	@$(call add,THE_KMODULES,drm-radeon drm-nouveau)
+use/x11/xorg: use/x11/intel use/x11/nouveau use/x11/radeon
 	@$(call add,THE_LISTS,$(call tags,desktop xorg))
 else
 use/x11/xorg: use/x11; @:
@@ -24,20 +26,34 @@ use/x11/intel: use/x11
 	@$(call add,THE_PACKAGES,xorg-dri-intel)	### #25044
 
 # for those cases when no 3D means no use at all
-# NB: blobs won't Just Work (TM) with use/x11/xorg,
-#     nouveau gets prioritized during autodetection
+# NB: blobs won't Just Work (TM) along with nouveau/radeon
+#     as free drivers get prioritized during autodetection
 #use/x11/3d: use/x11/intel use/x11/nvidia use/x11/fglrx; @:
 use/x11/3d: use/x11/intel use/x11/nvidia/optimus use/x11/radeon; @:
 
+# somewhat lacking compared to radeon but still
+use/x11/nouveau: use/x11 use/firmware
+	@$(call set,NVIDIA_KMODULES,drm-nouveau)
+	@$(call set,NVIDIA_PACKAGES,xorg-drv-nouveau)
+
 # has performance problems but is getting better, just not there yet
 use/x11/radeon: use/x11 use/firmware
-	@$(call add,THE_KMODULES,drm-radeon)
-	@$(call add,THE_PACKAGES,xorg-drv-ati xorg-drv-radeon)
+	@$(call set,RADEON_KMODULES,drm-radeon)
+	@$(call set,RADEON_PACKAGES,xorg-drv-ati xorg-drv-radeon)
+
+# here the future
+use/x11/amdgpu: use/x11 use/firmware
+	@$(call set,RADEON_PACKAGES,xorg-drv-amdgpu)
+
+# Vulkan is new and bleeding edge, only intel and amgpu(pro?)
+use/x11/vulkan: use/x11/intel use/x11/amdgpu
+	@$(call add,THE_PACKAGES,vulkan)
+	@$(call add,THE_PACKAGES,vulkan-radeon vulkan-intel)
 
 # sometimes broken with current xorg-server
 use/x11/nvidia: use/x11
-	@$(call add,THE_KMODULES,nvidia)
-	@$(call add,THE_PACKAGES,nvidia-settings nvidia-xconfig)
+	@$(call set,NVIDIA_KMODULES,nvidia)
+	@$(call set,NVIDIA_PACKAGES,nvidia-settings nvidia-xconfig)
 
 use/x11/nvidia/optimus: use/x11/nvidia
 	@$(call add,THE_KMODULES,bbswitch)
@@ -45,8 +61,8 @@ use/x11/nvidia/optimus: use/x11/nvidia
 
 # oftenly broken with current xorg-server, use radeon then
 use/x11/fglrx: use/x11
-	@$(call add,THE_KMODULES,fglrx)
-	@$(call add,THE_PACKAGES,fglrx_glx fglrx-tools)
+	@$(call set,RADEON_KMODULES,fglrx)
+	@$(call set,RADEON_PACKAGES,fglrx_glx fglrx-tools)
 
 use/x11/wacom: use/x11
 	@$(call add,THE_PACKAGES,xorg-drv-wacom xorg-drv-wizardpen)
@@ -78,10 +94,13 @@ use/x11/icewm: use/x11
 use/x11/tde: use/x11
 	@$(call add,THE_LISTS,$(call tags,tde desktop))
 
-use/x11/kde4-lite: use/x11
+use/x11/kde/synaptic:
+	@$(call add,THE_PACKAGES,synaptic-kde synaptic-usermode-)
+
+use/x11/kde4-lite: use/x11 use/x11/kde/synaptic
 	@$(call add,THE_LISTS,$(call tags,kde4 desktop))
 
-use/x11/kde4: use/x11
+use/x11/kde4: use/x11 use/x11/kde/synaptic
 	@$(call add,THE_PACKAGES,kde4-default)
 	@$(call add,IM_PACKAGES,imsettings-qt)
 
@@ -94,8 +113,13 @@ use/x11/gtk/nm: use/net/nm
 	@$(call add,THE_LISTS,$(call tags,desktop nm))
 
 use/x11/xfce: use/x11
-	@$(call add,THE_LISTS,$(call tags,xfce desktop))
+	@$(call add,THE_PACKAGES,xfce4-regular)
+ifneq (,$(filter-out e2k,$(ARCH)))
 	@$(call add,IM_PACKAGES,imsettings-xfce)
+endif
+
+use/x11/xfce/full: use/x11/xfce
+	@$(call add,THE_PACKAGES,xfce4-full)
 
 use/x11/cinnamon: use/x11/xorg
 	@$(call add,THE_LISTS,$(call tags,cinnamon desktop))
@@ -145,5 +169,5 @@ use/x11/dwm: use/x11
 use/x11/leechcraft: use/x11
 	@$(call add,THE_PACKAGES,leechcraft)
 
-use/x11/kde5: use/x11/xorg
-	@$(call add,THE_PACKAGES,kde5-big icon-theme-oxygen)
+use/x11/kde5: use/x11/xorg use/x11/kde/synaptic
+	@$(call add,THE_PACKAGES,kde5-maxi kf5-i18n-ru kde5-i18n-ru)

@@ -1,0 +1,7 @@
+#!/bin/sh
+
+systemctl enable sshd
+systemctl enable rpcbind
+systemctl enable NetworkManager
+systemctl enable ahttpd
+systemctl enable alteratord

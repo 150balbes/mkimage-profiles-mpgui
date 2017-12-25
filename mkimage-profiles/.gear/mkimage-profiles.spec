@@ -1,8 +1,8 @@
 Name: mkimage-profiles
-Version: 1.1.80
+Version: 1.2.6
 Release: alt1
 
-Summary: ALT Linux based distribution metaprofile
+Summary: ALT based distribution metaprofile
 License: GPLv2+
 Group: Development/Other
 
@@ -11,7 +11,7 @@ Source: %name-%version.tar
 Packager: Michael Shigorin <mike@altlinux.org>
 
 BuildArch: noarch
-BuildRequires: rsync asciidoc-a2x xmlgraphics-fop fonts-ttf-dejavu
+BuildRequires: rsync
 
 Requires: rsync git-core
 Requires: time schedutils sfdisk
@@ -23,12 +23,10 @@ Requires: mkimage-preinstall
 %define mpdir %_datadir/%name
 %add_findreq_skiplist %mpdir/*.in/*
 
+%def_with doc
 %define docs $HOME/docs
 
-%package doc
-Summary: %name documentation
-Group: Development/Documentation
-BuildRequires: java /proc
+Summary(ru_RU.UTF-8): метапрофиль дистрибутивов на базе Альт
 
 %description
 mkimage-profiles is a collection of bits and pieces useful for
@@ -39,12 +37,13 @@ to choose from, and some ready-made image recipes as well.
 Make no mistake: constructing distributions isn't just fun, it takes
 a lot of passion and knowledge to produce a non-trivial one.  So m-p
 (the short alias for mkimage-profiles) is complex too.  If you need
--- or want -- to make just a few tweaks to an existing recipe, it might
+-- or want -- to make a few tweaks to an existing recipe, it might
 be easier to comprehend the generated profile (aka builddir) which
 contains only the needed subprofiles, script hooks and package lists
 and is way more compact.
 
-Virtual environment template caches (OpenVZ/LXC) can be made either.
+The main deliverable form for x86 is a (hybrid) ISO; virtual environment
+template caches (OpenVZ/LXC) can be made either as well as VM disk images.
 
 In short, setup hasher (http://en.altlinux.org/hasher) and here we go:
   cd %mpdir
@@ -54,31 +53,194 @@ In short, setup hasher (http://en.altlinux.org/hasher) and here we go:
 But if you're into regular distro hacking and are not afraid of make
 and modest metaprogramming (some code generation and introspection),
 welcome to the metaprofile itself; read the docs and get the git:
+%url (NB: these are mostly in Russian with translation on demand).
+
+%description -l ru_RU.UTF-8
+mkimage-profiles является собранием всего необходимого для
+построения дистрибутивов и содержит списки пакетов, особенности
+и целые субпрофили (вроде "кирпичика" rescue), из которых можно
+выбирать требуемое; также включены и описания готовых образов.
+
+Поймите правильно: создание дистрибутивов является занятием
+не только интересным, но и требующим вдохновения и знаний
+для получения нетривиального результата.  Если хочется или же
+необходимо чуток поправить уже существующий "рецепт", может
+быть проще разобраться в сгенерированном профиле (builddir),
+который содержит только необходимые субпрофили, скрипты
+и списки пакетов, являясь намного более компактным.
+
+Основной формой результата на x86 является (гибридный) ISO-образ;
+также возможно создавать шаблоны контейнеров OpenVZ/LXC и образы
+дисков виртуальных машин.
+
+Короче говоря, настройте hasher (http://altlinux.org/hasher) и:
+  cd %mpdir
+  head README
+  make syslinux.iso
+
+Но если разработка дистрибутивов становится обыденным делом
+и не страшитесь make и чуточки метапрограммирования (немного
+генерирования кода и интроспекции), добро пожаловать в сам
+метапрофиль; гляньте документацию и забирайте git:
 %url
+
+%package doc
+Summary: %name documentation
+Group: Development/Documentation
+%{?_with_doc:BuildRequires: java /proc}
+%{?_with_doc:BuildRequires: asciidoc-a2x fop fonts-ttf-dejavu}
+Summary(ru_RU.UTF-8): документация %name
 
 %description doc
 This package holds developer docs for %name
 as a book in HTML and PDF formats.
 
+%description -l ru_RU.UTF-8 doc
+Этот пакет содержит документацию разработчика
+для %name в форме книжки (HTML, PDF).
+
 %prep
 %setup
 
 %build
+%if_with doc
 make BUILDDIR=%docs docs
+%endif
 
 %install
-mkdir -p %buildroot%mpdir
+mkdir -p %buildroot{%mpdir,%_man7dir}
 cp -a * %buildroot%mpdir
+%if_with doc
+mv %buildroot%mpdir/doc/mkimage-profiles.7 %buildroot%_man7dir/
+%endif
 
 %files
 %mpdir/
+%if_with doc
+%_man7dir/*
+%endif
 
+%if_with doc
 %files doc
 %doc README
 %doc QUICKSTART
 %doc %docs/*
+%endif
 
 %changelog
+* Mon Dec 11 2017 Michael Shigorin <mike@altlinux.org> 1.2.6-alt1
+- starterkits-20161212
+
+* Mon Dec 04 2017 Michael Shigorin <mike@altlinux.org> 1.2.5-alt1
+- qcow2c
+
+* Mon Nov 20 2017 Michael Shigorin <mike@altlinux.org> 1.2.4-alt1
+- opennebula-systemd
+
+* Mon Sep 25 2017 Michael Shigorin <mike@altlinux.org> 1.2.3-alt1
+- p8+
+
+* Mon Sep 11 2017 Michael Shigorin <mike@altlinux.org> 1.2.2-alt1
+- regular-engineering
+
+* Mon Aug 21 2017 Michael Shigorin <mike@altlinux.org> 1.2.1-alt1
+- seven years ago...
+
+* Mon Aug 07 2017 Michael Shigorin <mike@altlinux.org> 1.2.0-alt1
+- e2k
+
+* Mon Jul 31 2017 Michael Shigorin <mike@altlinux.org> 1.1.110-alt1
+- lxde-sysv
+
+* Mon Jun 12 2017 Michael Shigorin <mike@altlinux.org> 1.1.109-alt1
+- starterkits-20170612
+
+* Mon Apr 24 2017 Michael Shigorin <mike@altlinux.org> 1.1.108-alt1
+- yandex.mirror
+
+* Mon Apr 03 2017 Michael Shigorin <mike@altlinux.org> 1.1.107-alt1
+- serial improvements
+
+* Mon Mar 13 2017 Michael Shigorin <mike@altlinux.org> 1.1.106-alt1
+- starterkits-20170312
+
+* Mon Feb 27 2017 Michael Shigorin <mike@altlinux.org> 1.1.105-alt1
+- disable git hooks (glebfm@)
+
+* Mon Feb 06 2017 Michael Shigorin <mike@altlinux.org> 1.1.104-alt1
+- [[vncinst]] fixed
+
+* Mon Jan 30 2017 Michael Shigorin <mike@altlinux.org> 1.1.103-alt1
+- rescue -= bootsplash
+
+* Mon Jan 09 2017 Michael Shigorin <mike@altlinux.org> 1.1.102-alt1
+- 2017
+
+* Mon Dec 12 2016 Michael Shigorin <mike@altlinux.org> 1.1.101-alt1
+- starterkits-20161212
+
+* Mon Dec 05 2016 Michael Shigorin <mike@altlinux.org> 1.1.100-alt1
+- preparing for starterkits
+
+* Mon Nov 14 2016 Michael Shigorin <mike@altlinux.org> 1.1.99-alt1
+- xfce-sysv
+- preparing...
+
+* Mon Oct 31 2016 Michael Shigorin <mike@altlinux.org> 1.1.98-alt1
+- preparing for workstation 8.1
+
+* Mon Oct 03 2016 Michael Shigorin <mike@altlinux.org> 1.1.97-alt1
+- regular tweaks
+
+* Mon Sep 12 2016 Michael Shigorin <mike@altlinux.org> 1.1.96-alt1
+- starterkits-20160912
+
+* Mon Aug 15 2016 Michael Shigorin <mike@altlinux.org> 1.1.95-alt1
+- s/basealt/alt/g
+
+* Mon Jun 27 2016 Michael Shigorin <mike@altlinux.org> 1.1.94-alt1
+- workstation
+
+* Mon Jun 13 2016 Michael Shigorin <mike@altlinux.org> 1.1.93-alt1
+- starterkits-20160612
+
+* Mon May 30 2016 Michael Shigorin <mike@altlinux.org> 1.1.92-alt1
+- server-openstack
+
+* Mon May 23 2016 Michael Shigorin <mike@altlinux.org> 1.1.91-alt1
+- nvidia/nouveau rehash
+- overlayfs support (lakostis@)
+
+* Tue May 03 2016 Michael Shigorin <mike@altlinux.org> 1.1.90-alt1
+- starterkits-20160429
+
+* Mon Apr 25 2016 Michael Shigorin <mike@altlinux.org> 1.1.89-alt1
+- preparing for p8 starterkits
+
+* Mon Apr 11 2016 Michael Shigorin <mike@altlinux.org> 1.1.88-alt1
+- pkg.in/profiles
+
+* Mon Mar 14 2016 Michael Shigorin <mike@altlinux.org> 1.1.87-alt1
+- starterkits-20160312
+
+* Mon Feb 29 2016 Michael Shigorin <mike@altlinux.org> 1.1.86-alt1
+- junior
+
+* Mon Feb 15 2016 Michael Shigorin <mike@altlinux.org> 1.1.85-alt1
+- regular-jeos-ovz
+
+* Mon Feb 08 2016 Michael Shigorin <mike@altlinux.org> 1.1.84-alt1
+- %name(7) :)
+
+* Mon Jan 25 2016 Michael Shigorin <mike@altlinux.org> 1.1.83-alt1
+- openssh 7.x (see also #31716)
+
+* Mon Jan 11 2016 Michael Shigorin <mike@altlinux.org> 1.1.82-alt1
+- firmwarez
+
+* Mon Dec 07 2015 Michael Shigorin <mike@altlinux.org> 1.1.81-alt1
+- regular fixes
+
 * Mon Nov 30 2015 Michael Shigorin <mike@altlinux.org> 1.1.80-alt1
 - pre-starterkit cleanups
 

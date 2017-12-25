@@ -68,8 +68,6 @@ postclean: build-image
 		fi; \
 		$(MAKE) -C "$(BUILDDIR)" distclean \
 			GLOBAL_BUILDDIR="$(BUILDDIR)" $(LOG) ||:; \
-			if [ -z "$(BUILDDIR_NO_RM)" ]; then \
-				rm -rf "$(BUILDDIR)"; \
-			fi; \
+		rm -rf "$(BUILDDIR)"; \
 	fi; \
 	} >&2

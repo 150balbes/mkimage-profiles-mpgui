@@ -1,0 +1,4 @@
+#!/bin/sh -e
+
+echo -e '/dev/root\t/\text4\tdefaults\t0 0' >> /etc/fstab
+echo -e 'LABEL=BOOT\t/boot\tvfat\tdefaults\t0 0' >> /etc/fstab

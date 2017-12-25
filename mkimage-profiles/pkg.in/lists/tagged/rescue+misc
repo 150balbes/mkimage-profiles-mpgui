@@ -8,7 +8,7 @@ docx2txt
 unrtf
 
 # Networking
-drbd83-tools
+drbd-utils
 iscsitarget-utils
 ntp-utils
 
@@ -26,6 +26,7 @@ rmt
 
 # Hardware
 cmospwd
+cpuid2
 encled
 flashrom
 hwinfo

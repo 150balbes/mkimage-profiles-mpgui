@@ -71,7 +71,7 @@ distro: bootargs
 	@if [ -n "$(META_VOL_SET)" ]; then \
 		DISTRO="$(META_VOL_SET)"; \
 	else \
-		DISTRO="ALT Linux"; \
+		DISTRO="ALT"; \
 	fi; \
 	sed -i "s,@distro@,$$DISTRO," $(DSTDIR)/*.cfg
 
@@ -81,6 +81,14 @@ bootargs: clean
 		sed -i "s,@bootargs@,$(STAGE2_BOOTARGS)," $(DSTDIR)/*.cfg; \
 	fi; \
 	sed -i "s,@bootargs@,," $(DSTDIR)/*.cfg
+	@if [ -n "$(RESCUE_BOOTARGS)" ]; then \
+		sed -i "s,@rescue_bootargs@,$(RESCUE_BOOTARGS)," $(DSTDIR)/*.cfg; \
+	fi; \
+	sed -i "s,@rescue_bootargs@,," $(DSTDIR)/*.cfg
+	@if [ -n "$(BOOTVGA)" ]; then \
+		sed -i "s,@bootvga@,$(BOOTVGA)," $(DSTDIR)/*.cfg; \
+	fi; \
+	sed -i "s,@bootvga@,,;s,vga= ,," $(DSTDIR)/*.cfg
 
 clean: copy
 	@if [ "$(SYSLINUX_UI)" = gfxboot ]; then \

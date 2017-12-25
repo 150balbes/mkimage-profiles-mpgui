@@ -4,6 +4,10 @@ use/fonts:
 	@$(call xport,FONT_FEATURES_ENABLE)
 	@$(call xport,FONT_FEATURES_DISABLE)
 
+# standalone target to specify non-bitmap installer fonts
+use/fonts/install2:
+	@$(call add,SYSTEM_PACKAGES,fonts-ttf-google-croscore-arimo)
+
 # just stating that kernels and font habits are pretty individual
 use/fonts/zerg: use/fonts
 	@$(call set,FONT_FEATURES_ENABLE,antialias lcdfilter-default \
@@ -14,6 +18,10 @@ use/fonts/zerg: use/fonts
 # nothing configured to add_feature but let's not skip that for consistency
 use/fonts/infinality: use/fonts
 	@$(call add,THE_PACKAGES,libfreetype-infinality fontconfig-infinality)
+
+# #34142
+use/fonts/chinese: use/fonts
+	@$(call add,THE_PACKAGES,fonts-bitmap-wqy)
 
 # a few typical font collections
 # NB: dejavu is ugly thus missing
@@ -27,7 +35,9 @@ use/fonts/otf/mozilla:
 	@$(call add,THE_PACKAGES,fonts-otf-mozilla-fira)
 
 use/fonts/ttf/google:
-	@$(call add,THE_PACKAGES,fonts-ttf-droid)
+	@$(call add,THE_PACKAGES,fonts-ttf-google-droid-sans)
+	@$(call add,THE_PACKAGES,fonts-ttf-google-droid-sans-mono)
+	@$(call add,THE_PACKAGES,fonts-ttf-google-droid-serif)
 	@$(call add,THE_PACKAGES,fonts-ttf-google-croscore-arimo)
 	@$(call add,THE_PACKAGES,fonts-ttf-google-croscore-cousine)
 	@$(call add,THE_PACKAGES,fonts-ttf-google-croscore-tinos)

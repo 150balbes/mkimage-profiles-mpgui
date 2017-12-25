@@ -4,17 +4,21 @@ ifeq (ve,$(IMAGE_CLASS))
 ve/bare: ve/.base +sysvinit; @:
 
 # /dev/pty and friends start here
-ve/base: ve/bare
+ve/base: ve/bare use/net-dns/level3
 	@$(call add,BASE_PACKAGES,interactivesystem)
 
 # a particular package list
-ve/ldv: ve/bare
+ve/ldv: ve/bare use/control/server/ldv
 	@$(call add,BASE_PACKAGES,xz bzip2 glibc hostinfo less)
 	@$(call add,BASE_PACKAGES,vim-console netlist rsync time)
 	@$(call add,BASE_PACKAGES,openssh-blacklist openssh-server)
 	@$(call add,BASE_PACKAGES,shadow-edit shadow-groups)
 
 ve/docker: ve/.base use/repo; @:
+
+# build environment
+ve/builder: ve/base use/dev/builder/base use/repo
+	@$(call add,BASE_LISTS,openssh)
 
 # this should be more or less convenient
 ve/generic: ve/base use/repo
@@ -29,8 +33,11 @@ ve/openvpn: ve/bare
 ve/pgsql94: ve/generic
 	@$(call add,BASE_PACKAGES,postgresql9.4-server)
 
-ve/systemd-bare: ve/.base use/control/sudo-su use/repo use/net/networkd +systemd
+ve/samba-DC: ve/generic
+	@$(call add,BASE_PACKAGES,task-samba-dc glibc-locales net-tools)
+
+ve/systemd-bare: ve/.base use/net/networkd +systemd \
+	use/control/sudo-su use/repo use/net-ssh
 	@$(call add,BASE_PACKAGES,interactivesystem su)
-	@$(call add,BASE_LISTS,openssh)
 
 endif

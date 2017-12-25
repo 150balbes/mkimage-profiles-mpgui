@@ -1,0 +1,3 @@
+#!/bin/sh
+
+sed -i '/^#.\+http.\+aarch64 classic/ s,^#,,; s,\[alt\],,' /etc/apt/sources.list.d/alt.list

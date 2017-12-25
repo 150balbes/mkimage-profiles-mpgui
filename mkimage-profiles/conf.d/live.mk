@@ -1,7 +1,8 @@
 # live images
 ifeq (distro,$(IMAGE_CLASS))
 
-distro/dos: distro/.init use/dos use/syslinux/ui/menu; @:
+distro/dos: distro/.init use/dos use/syslinux/ui/menu
+	@$(call set,RELNAME,ALT FreeDOS)
 
 distro/rescue: distro/.base use/rescue use/syslinux/ui/menu \
 	use/efi/signed use/efi/refind use/efi/shell; @:
@@ -52,7 +53,8 @@ distro/live-rescue: distro/live-icewm +efi
 
 # NB: this one doesn't include the browser, needs to be chosen downstream
 distro/.live-webkiosk: distro/.live-kiosk \
-	use/isohybrid use/live/hooks use/live/ru use/sound
+	use/isohybrid use/live/hooks use/live/ru use/sound \
+	use/stage2/kms use/x11/xorg
 	@$(call add,LIVE_LISTS,$(call tags,live desktop))
 
 distro/.live-webkiosk-gtk: distro/.live-webkiosk
@@ -88,21 +90,22 @@ distro/.live-games: distro/.live-kiosk use/x11/3d use/sound \
 	use/stage2/net-eth use/net-eth/dhcp use/services +efi +sysvinit
 	@$(call set,KFLAVOURS,un-def)
 	@$(call add,LIVE_LISTS,$(call tags,xorg misc))
-	@$(call add,LIVE_PACKAGES,input-utils glxgears glxinfo)
+	@$(call add,LIVE_PACKAGES,pciutils input-utils glxgears glxinfo)
 	@$(call add,DEFAULT_SERVICES_DISABLE,rpcbind alteratord messagebus)
 	@$(call add,SERVICES_DISABLE,livecd-net-eth)
 
 distro/live-flightgear: distro/.live-games
-	@$(call add,LIVE_PACKAGES,FlightGear FlightGear-tu154b)
+	@$(call add,LIVE_PACKAGES,FlightGear)
 	@$(call add,LIVE_PACKAGES,fgo livecd-fgfs)
 	@$(call try,HOMEPAGE,http://www.4p8.com/eric.brasseur/flight_simulator_tutorial.html)
+
+distro/live-flightgear-tu154: distro/.live-games
+	@$(call add,LIVE_PACKAGES,FlightGear-tu154b)
 
 distro/live-0ad: distro/.live-games
 	@$(call add,STAGE2_BOOTARGS,quiet)
 	@$(call add,LIVE_PACKAGES,0ad livecd-0ad)
 	@$(call try,HOMEPAGE,http://play0ad.com/)
-
-distro/live-e17: distro/.live-desktop-ru use/x11/e17 use/x11/lightdm/gtk; @:
 
 distro/live-gimp: distro/live-icewm use/live/ru
 	@$(call add,LIVE_LISTS,$(call tags,desktop sane))
@@ -118,14 +121,14 @@ distro/live-robo: distro/live-icewm +robotics use/live/ru; @:
 distro/live-privacy: distro/.base +power +efi +systemd +vmguest \
 	use/live/base use/live/privacy use/live/ru \
 	use/x11/xorg use/x11/lightdm/gtk use/x11/mate use/x11-autologin \
-	use/browser/firefox/i18n use/sound \
+	use/browser/firefox/esr use/browser/firefox/i18n use/sound \
 	use/fonts/otf/adobe use/fonts/otf/mozilla \
 	use/fonts/ttf/google use/fonts/ttf/redhat
 	@$(call set,KFLAVOURS,un-def)
 	@$(call add,LIVE_LISTS,$(call tags,base l10n))
 	@$(call add,LIVE_LISTS,$(call tags,archive extra))
 	@$(call add,LIVE_PACKAGES,chromium gedit mc-full pinta xchm livecd-ru)
-	@$(call add,LIVE_PACKAGES,LibreOffice4-langpack-ru java-1.7.0-openjdk)
+	@$(call add,LIVE_PACKAGES,LibreOffice-langpack-ru java-1.8.0-openjdk)
 	@$(call add,LIVE_PACKAGES,mate-document-viewer-caja)
 	@$(call add,LIVE_PACKAGES,mate-document-viewer-djvu)
 	@$(call add,LIVE_PACKAGES,cups system-config-printer livecd-admin-cups)

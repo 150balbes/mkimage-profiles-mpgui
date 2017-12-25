@@ -7,6 +7,9 @@ IMAGE_PACKAGES = $(DOT_BASE) \
 		 $(THE_PACKAGES) \
 		 $(call list,$(BASE_LISTS) $(THE_LISTS))
 
+IMAGE_PACKAGES_REGEXP = $(THE_PACKAGES_REGEXP) \
+			$(BASE_PACKAGES_REGEXP)
+
 # intermediate chroot archive
 VM_TARBALL := $(IMAGE_OUTDIR)/$(IMAGE_NAME).tar
 VM_RAWDISK := $(IMAGE_OUTDIR)/$(IMAGE_NAME).raw
@@ -20,25 +23,31 @@ check-sudo:
 	fi
 
 prepare-image: check-sudo
-	@if ! sudo $(TOPDIR)/bin/tar2fs \
+	@if [ -x $(MKIMAGE_PREFIX)/bin/tar2fs ]; then \
+		TOPDIR=$(MKIMAGE_PREFIX); \
+	fi; \
+	if ! sudo $(TOPDIR)/bin/tar2fs \
 		"$(VM_TARBALL)" "$(VM_RAWDISK)"  $(VM_SIZE) $(VM_FSTYPE); then \
-		echo "** error: sudo tar2fs failed, see also doc/vm.txt" >&2; \
+		echo "** error: sudo tar2fs failed, see build log" >&2; \
 		exit 1; \
 	fi
 
 convert-image: prepare-image
-	@case "$(IMAGE_TYPE)" in \
+	@VM_COMPRESS=; \
+	case "$(IMAGE_TYPE)" in \
 	"img") mv "$(VM_RAWDISK)" "$(IMAGE_OUTPATH)"; exit 0;; \
 	"vhd") VM_FORMAT="vpc";; \
+	"qcow2c") VM_FORMAT="qcow2"; VM_COMPRESS="-c";; \
 	*) VM_FORMAT="$(IMAGE_TYPE)"; \
 	esac; \
 	if ! type -t qemu-img >&/dev/null; then \
-		echo "** warning: qemu-img not available" >&2; \
+		echo "** error: qemu-img not available" >&2; \
+		exit 1; \
 	else \
-		qemu-img convert -O "$$VM_FORMAT" \
+		qemu-img convert $$VM_COMPRESS -O "$$VM_FORMAT" \
 			"$(VM_RAWDISK)" "$(IMAGE_OUTPATH)"; \
 		rm "$(VM_RAWDISK)"; \
-		if [ -z "$(DEBUG)" ]; then rm "$(VM_TARBALL)"; fi; \
+		if [ "0$(DEBUG)" -le 1 ]; then rm "$(VM_TARBALL)"; fi; \
 	fi
 
 run-image-scripts: GLOBAL_CLEANUP_PACKAGES := $(CLEANUP_PACKAGES)

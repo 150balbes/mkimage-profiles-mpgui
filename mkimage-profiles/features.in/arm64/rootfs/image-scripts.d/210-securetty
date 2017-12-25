@@ -1,0 +1,5 @@
+#!/bin/sh
+
+echo ttyS0 >> /etc/securetty
+echo ttyAML0 >> /etc/securetty
+

@@ -7,7 +7,7 @@ METADIR := files/Metadata
 WHATEVER += metadata
 
 # handle these too
-DOT_BASE += $(BASE_PACKAGES_REGEXP)
+DOT_BASE += $(BASE_PACKAGES_REGEXP) $(THE_PACKAGES_REGEXP)
 
 # args: type, name
 define dump
@@ -15,7 +15,7 @@ if [ -n "$($(2)_$(1))" ]; then \
 	echo -e "\n## $(2)_$(1)"; \
 	case "$(1)" in \
 	PACKAGES) echo "$($(2)_$(1))";; \
-	LISTS) cat $($(2)_$(1));; \
+	LISTS) echo -e "\n# $($(2)_$(1))"; cat $($(2)_$(1));; \
 	esac; \
 fi;
 endef
@@ -34,10 +34,13 @@ metadata-.base:
 	} | sed -re '/^[^[:space:]#]/ s/[[:space:]]+/\n/g' > .base
 
 # see also alterator-pkg (backend3/pkg-install);
-# we only tar up what's up to it
+# we only tar up what's up to it (note that e.g.
+# LIVE_LISTS are needed in the generated profile
+# but not for alterator-pkg)
 metadata: metadata-.base
 	@mkdir -p $(METADIR); \
 	tar -C $(PKGDIR) -cvf - \
-		$(call rlist,$(THE_GROUPS) $(MAIN_GROUPS) .base) \
+		$(call rlist,.base $(call groups2lists)) \
 		$(call rgroup,$(THE_GROUPS) $(MAIN_GROUPS)) \
+		$(call rprofile,$(PKG_PROFILES)) \
 	> $(METADIR)/pkg-groups.tar

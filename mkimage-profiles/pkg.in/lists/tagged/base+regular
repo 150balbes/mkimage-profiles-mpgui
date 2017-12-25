@@ -6,18 +6,24 @@ ntfs-3g
 dosfstools
 fatresize
 
+make-initrd-ucode
+
 lvm2
 make-initrd-lvm
 
 mdadm
 make-initrd-mdadm
 
+shadow-change
+
 openssh
 openssh-blacklist
 net-tools
 nfs-utils
 
+smartmontools
 system-report
+ps_mem
 
 strace
 powertop
@@ -34,5 +40,6 @@ eepm
 bash-completion
 cpufreq-simple
 eject
+bc
 
 zsh

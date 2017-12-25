@@ -1,0 +1,12 @@
+#!/bin/sh -e
+
+#K=$(ls /boot/vmlinuz-*)
+#V=${K##*vmlinuz-}
+#F=$(file -b $K)
+
+#ln -s ../lib/devicetree/$V /boot/dtb
+
+#[ "$F" != "${F##*gzip}" ] || exit 0
+
+#mv $K $K.gz
+#gunzip $K.gz

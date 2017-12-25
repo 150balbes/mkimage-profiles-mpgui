@@ -4,7 +4,7 @@ ANSI_FAIL ?= 1;31
 
 MAX_LINES = 200
 MAX_ERRORS = 5
-GOTCHA := ^(((\*\* )?(E:|[Ee]rror|[Ww]arning).*)|(.* (FAILURE|FATAL|ERROR|conflicts|Depends:) .*)|(.* (Stop|failed|not found)\.))$$
+GOTCHA := ^(((\*\* )?(E:|[Ee]rror|[Ww]arning).*)|(.* (FAILURE|FATAL|ERROR|conflicts|Depends:) .*)|(.* (Stop|failed|not found)\.)|(not allowed))$$
 
 ifndef MKIMAGE_PROFILES
 $(error this makefile is designed to be included in toplevel one)
@@ -90,7 +90,7 @@ build-image: profile/populate
 		df -P $(BUILDDIR) | awk 'END { if ($$4 < $(LOWSPACE)) \
 			{ print "NB: low space on "$$6" ("$$5" used)"}}'; \
 	fi; \
+	if [ -n "$(AUTOCLEAN)" -a $$RETVAL = 0 ]; then $(MAKE) distclean; fi; \
 	if [ -n "$(BELL)" ]; then echo -ne '\a'; fi; \
-	if [ -n "$(BELL_CMD)" ]; then /etc/mp-gui.d/play_sound; fi; \
 	exit $$RETVAL; \
 	} >&2

@@ -3,17 +3,16 @@ http://en.altlinux.org/Hasher; large tmpfs helps a lot).
 
 требуется
 ~~~~~~~~~
-- ALT Linux 7.0 или выше (возможна адаптация "вниз")
+- ALT 8.0 или выше (возможна адаптация "вниз", см. ветки)
 - установленный mkimage (свежий, как и hasher)
-- пользователь с правом запуска hasher
+- пользователь с правом запуска hasher и подключения /proc к нему
 
 полезно
 ~~~~~~~
 - смонтированный tmpfs на несколько гигабайт (или укажите BUILDDIR)
   * например, в /tmp или /home/USER/hasher
   * каталог из prefix в /etc/hasher-priv/system
-- установленный git-core
-- настроенный ~/.gitconfig
+- установленный git-core и настроенный ~/.gitconfig
 
 команды
 ~~~~~~~
@@ -52,3 +51,4 @@ $ make ARCH=i586 APTCONF=~/apt/apt.conf.i586 REPORT=1 ve/generic.tar
 - http://www.altlinux.org/mkimage
 - http://www.altlinux.org/m-p
 - http://www.altlinux.org/m-p-howto ("как поправить под себя")
+- http://www.altlinux.org/starterkits/builder (сборочный LiveCD)

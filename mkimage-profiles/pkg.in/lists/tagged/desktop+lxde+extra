@@ -1,17 +1,17 @@
 tango-icon-theme-extras
 
 lxde-lxterminal
-sakura
 fonts-bitmap-terminus
 
 leafpad
 galculator
-deadbeef
+deadbeef-incomplete
+deadbeef-etcskel
+smplayer-mpv
 mtpaint
 parcellite
 
-# gqview is long erm... stable, george@ suggested upgrading to geeqie
-geeqie
+gpicview
 
 # file-roller is recommended over xarchiver (gns@) and not that fatty yet
 file-roller
@@ -24,3 +24,6 @@ lxde-lxlauncher
 
 # instead of a (missing) native notification display
 notify-osd
+
+# for lock screen session menu entry
+xscreensaver-frontend

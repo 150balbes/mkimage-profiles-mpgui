@@ -1,0 +1,10 @@
+#!/bin/sh -e
+
+#K=$(ls /boot/vmlinuz-*)
+#V=${K##*vmlinuz-}
+
+#AUTODETECT= \
+#FEATURES='add-modules compress cleanup' \
+#MODULES_ADD='bcm2835 mmc_block ext4' \
+#/usr/sbin/make-initrd --no-checks --kernel $V --config=/dev/null
+#/sbin/installkernel --keep-initrd $V
