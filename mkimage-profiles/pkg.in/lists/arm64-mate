@@ -10,7 +10,6 @@ fonts-otf-adobe-source-sans-pro
 fonts-otf-mozilla-fira
 control
 xdg-user-dirs
-#pam-limits-desktop
 bash-completion-systemd
 upower
 bluez
@@ -21,7 +20,6 @@ fonts-ttf-google-droid-serif
 fonts-ttf-google-croscore-arimo
 fonts-ttf-google-croscore-cousine
 fonts-ttf-google-croscore-tinos
-
 xorg-server
 xorg-drv-evdev
 xorg-drv-libinput
@@ -40,8 +38,8 @@ NetworkManager
 NetworkManager-vpnc
 NetworkManager-openvpn
 NetworkManager-pptp
-# this one pulls strongswan, a bit too much?
-#NetworkManager-l2tp
+NetworkManager-gnome
+NetworkManager-l2tp-gnome
 usb-modeswitch
 mate-full
 altlinux-freedesktop-menu-mate
@@ -54,15 +52,11 @@ cifs-utils
 keyutils
 nfs-utils
 libnss-fallback
-#krb5-ticket-watcher
-
-## DOT_BASE
 #^kernel-image-mp
 ^branding-alt-sisyphus-(notes|alterator|graphics|indexhtml|notes|bootloader|bootsplash)$
 make-initrd-plymouth
 cpio
 firefox
-#firefox-ru
 gst-libav
 gst-plugins-base1.0
 gst-plugins-good1.0
@@ -109,9 +103,7 @@ gparted
 gpart
 x11-ssh-askpass
 sysfsutils
-# Startup
 rootfiles
-# Common
 acl
 coreutils
 glibc-nss
@@ -120,22 +112,13 @@ man
 man-pages
 util-linux
 screen
-# Package management
 apt-repo
-# Partition management
 fdisk
-# Serial console
 agetty
-# Console mouse
-NetworkManager
-NetworkManager-gnome
-NetworkManager-l2tp-gnome
 rfkill
 dbus-tools-gui
 fonts-otf-mozilla-fira
 xdg-user-dirs
-#gnome-minimal
-#gnome-mobile
 ConsoleKit
 ConsoleKit-x11
 pam-ck-connector
@@ -143,14 +126,4 @@ notification-daemon
 sane
 sane-frontends
 hplip-sane
-#gscan2pdf
 xsane
-menu-icons-default
-NetworkManager-vpnc
-NetworkManager-openvpn
-NetworkManager-pptp
-usb-modeswitch
-mate-full
-altlinux-freedesktop-menu-mate
-iso-codes
-tzdata
