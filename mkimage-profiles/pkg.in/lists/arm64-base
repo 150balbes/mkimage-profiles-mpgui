@@ -1,9 +1,8 @@
 ## THE_PACKAGES
-fbset
+
 upower
 bluez
 lightdm-gtk-greeter
-menu-icons-default
 amixer
 alsa-utils
 aplay

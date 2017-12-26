@@ -8,9 +8,11 @@
 use/x11:
 	@$(call add_feature)
 	@$(call add,THE_LISTS,$(call tags,base xorg))
+ifeq (,$(filter-out i586 x86_64,$(ARCH)))
 	@$(call add,THE_KMODULES,drm)	# required by recent nvidia.ko as well
 	@$(call add,THE_KMODULES,$$(NVIDIA_KMODULES) $$(RADEON_KMODULES))
 	@$(call add,THE_PACKAGES,$$(NVIDIA_PACKAGES) $$(RADEON_PACKAGES))
+endif
 
 # x86: free drivers for various hardware (might lack acceleration)
 ifeq (,$(filter-out i586 x86_64,$(ARCH)))
