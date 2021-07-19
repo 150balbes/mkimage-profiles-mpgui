@@ -1,0 +1,19 @@
+card-actions
+
+# FIXME: cloned from ../tagged/base+smartcard :-/
+openct
+opensc
+pcsc-tools
+
+pcsc-lite
+pcsc-lite-acsccid
+pcsc-lite-asedriveiiie-usb
+pcsc-lite-ccid
+pcsc-lite-openct
+
+pam_pkcs11
+pam_p11
+
+openssl
+openssl-engines
+openssl-engine_pkcs11

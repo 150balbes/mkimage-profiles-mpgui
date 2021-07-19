@@ -1,0 +1,17 @@
+apg
+#chkrootkit
+john@X86
+hashalot
+hashcat@X86
+#logcheck
+md5deep
+ssdeep
+pwgen
+
+# integrity check
+osec
+osec-cronjob
+osec-mailreport
+
+# hardware reliability
+mcelog@X86

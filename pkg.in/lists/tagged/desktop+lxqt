@@ -1,0 +1,22 @@
+# metapackage
+lxqt-regular
+
+# media-player
+mpv
+qmmp1
+
+# graphics
+easypaint
+
+# text-editor
+featherpad
+
+gvfs-shares
+gvfs-backend-mtp
+
+icon-theme-oxygen
+x-cursor-theme-jimmac
+
+xscreensaver-frontend
+
+xdg-user-dirs-gtk

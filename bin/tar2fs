@@ -1,0 +1,449 @@
+#!/bin/bash -ex
+# usage:
+# tar2fs chroot.tar image.raw [size_in_bytes [fstype]]
+
+. shell-error
+export LANG=C
+
+if [ $# -lt 2 ]; then
+	fatal "error: tar2fs needs at least two arguments"
+fi
+
+# this needs env_keep sudo setup to actually work
+if [ -n "$GLOBAL_BUILDDIR" ]; then
+	WORKDIR="$GLOBAL_BUILDDIR/vmroot"
+else
+	WORKDIR="$(mktemp --tmpdir -d vmroot-XXXXX)"
+fi
+
+[ -n "$WORKDIR" ] || fatal "couldn't come up with suitable WORKDIR"
+
+[ -n "$GLOBAL_DEBUG" ] || message "WORKDIR: $WORKDIR"
+
+MB=1048576		# a parted's "megabyte" in bytes is *broken*
+
+SIZE_FACTOR=2		# multiply the sizes found by this value
+BOOT_SIZE_FACTOR=2	# multiply /boot size by this value additionally
+BOOTLOADERPARTSIZEM=0	# PReP partition size (ppc*)
+
+CUR_BOUNDARY=0		# align first partition at 1MB for performance (+1)
+
+BOOTFSTYPE=
+BOOTPART=
+EFIPARTFSTYPE=
+EFIPART=
+
+BOOTLOADER="$5"
+
+if [ -n "$6" ]; then
+	ARCH="$6"
+else
+	ARCH="$(arch)"
+fi
+
+BOOTTYPE="$8"
+
+case "$ARCH" in
+e2k)
+	BOOTFSTYPE="ext2"       # firmware knows it
+	BLOCKDEV="/dev/sda"     # ...hopefully...
+	BOOTPART="1"
+	ROOTPART="2"
+	;;
+ppc*)
+	BOOTFSTYPE="ext4"
+	BLOCKDEV="/dev/sda"
+	BOOTLOADERPART="1"
+	BOOTLOADERPARTSIZEM="8"
+	ROOTPART="2"
+	;;
+*)
+	if [ "$BOOTLOADER" == grub-efi -o "$BOOTTYPE" == EFI ]; then
+		EFIPART="1"
+		EFIPARTSIZEM="256"
+		EFIPARTFSTYPE="fat"
+		ROOTPART="2"
+	else
+		ROOTPART="1"
+	fi
+	BLOCKDEV="/dev/sda"
+	;;
+esac
+
+PARTTABLE="$7"
+if [ -z "$PARTTABLE" ]; then
+	if [ "$BOOTLOADER" == grub-efi ]; then
+		PARTTABLE=gpt
+	else
+		PARTTABLE=msdos
+	fi
+fi
+
+# figure out the part taken by /boot in the given tarball
+boot_size() {
+	if [ -n "$BOOTPART" ]; then
+		tar tvf "$1" \
+		| awk ' \
+			BEGIN { sum=0 }
+			/^-.* \.\/boot\// { sum=sum+$3 }
+			END { print sum }'
+	else
+		echo "0"
+	fi
+}
+
+# parted wrapper for convenience
+parting() { parted "$LOOPDEV" --align optimal --script -- "$@"; }
+
+# unfortunately parted is insane enough to lump alignment controls
+# into unit controls so creating adjacent partitions sized in MiB
+# is not as straightforward as it might be... thus "+1" padding;
+# see also http://www.gnu.org/software/parted/manual/parted.html#unit
+mkpart() {
+	# a bit different start/end semantics to handle end of device too
+	local start="$(($CUR_BOUNDARY + 1))"	# yes, we lose a megabyte
+	if [ -n "$1" ]; then
+		CUR_BOUNDARY="$(($start + $1))"
+		local end="$CUR_BOUNDARY"MiB
+	else
+		local end="$OFFSET"MiB
+	fi
+	if [ -n "$2" ]; then
+		CUR_FS="$2"
+	else
+		CUR_FS=ext2
+	fi
+	parting mkpart primary "$CUR_FS" "$start"MiB "$end"
+}
+
+# a tarball containing chroot with a kernel
+TAR="$1"
+[ -s "$TAR" ] || fatal "source tarball doesn't really exist"
+
+# a path to the image to be generated
+IMG="$2"
+[ -d "$(dirname "$IMG")" ] || fatal "target directory doesn't exist"
+
+# 0 means auto; if a value is specified it holds (no /boot subtracted)
+ROOTSIZE="$3"
+[ -n "$ROOTSIZE" -a "$ROOTSIZE" != 0 ] || unset ROOTSIZE
+
+# image size in bytes
+TARSIZE="$(stat -Lc %s "$TAR")"
+# /boot size in that tarball
+BOOTSIZE="$(boot_size "$TAR")"
+DEFSIZE="$(($SIZE_FACTOR * ($TARSIZE - $BOOTSIZE)))"	# (exact sizes)
+ROOTSIZE="$((${ROOTSIZE:-$DEFSIZE} + $MB - 1))"	# for ceil rounding to MB
+# image and /boot sizes in megabytes
+ROOTSIZEM="$(($ROOTSIZE / $MB))"
+BOOTSIZEM="$((($SIZE_FACTOR * $BOOT_SIZE_FACTOR * $BOOTSIZE + $MB - 1) / $MB))"
+
+# tested to work: ext[234], jfs
+# NB: xfs doesn't have a spare sector for the bootloader
+ROOTFSTYPE="${4:-ext4}"
+
+# single root partition hardwired so far,
+# add another image for home/data/swap if needed
+ROOTDEV="$BLOCKDEV$ROOTPART"
+
+# last preparations...
+MKFS="mkfs.$ROOTFSTYPE ${BOOTFSTYPE:+mkfs.$BOOTFSTYPE} \
+  ${EFIPARTFSTYPE:+mkfs.$EFIPARTFSTYPE}"
+for i in losetup sfdisk parted kpartx $MKFS; do
+	if ! type -t "$i" >&/dev/null; then
+		fatal "$i required but not found in host system"
+	fi
+done
+
+LOOPDEV="$(losetup --find)"	# would be sad about non-binary megabytes too
+ROOTFS="$WORKDIR/chroot"
+
+BOOTFS=
+EFIPARTFS=
+if [ -n "$BOOTPART" ]; then
+	BOOTFS="$ROOTFS/boot"
+fi
+if [ -n "$EFIPART" ]; then
+	EFIPARTFS="$ROOTFS/boot/efi"
+fi
+
+exit_handler() {
+	rc=$?
+	cd /
+	if [ -n "$ROOTFS" ]; then
+		umount ${EFIPARTFS:+"$EFIPARTFS"} ${BOOTFS:+"$BOOTFS"} \
+		  "$ROOTFS"{/dev,/proc,/sys,}
+
+		if [ -n "$LOOPDEV" ]; then
+			kpartx -d -s "$LOOPDEV" || {
+				sleep 10
+				kpartx -d -s -v "$LOOPDEV"
+			}
+			losetup --detach "$LOOPDEV"
+		fi
+		rm -r -- "$ROOTFS"
+		rmdir -- "$WORKDIR"
+	fi
+	exit $rc
+}
+
+# handle -e in shebang as well
+trap exit_handler EXIT ERR
+
+# prepare disk image and a filesystem inside it
+rm -f -- "$IMG"
+OFFSET="$(($CUR_BOUNDARY + $EFIPARTSIZEM + $BOOTLOADERPARTSIZEM + $BOOTSIZEM + $ROOTSIZEM - 1))"
+dd if=/dev/zero of="$IMG" conv=notrunc bs=$MB count=1 seek="$OFFSET"
+losetup "$LOOPDEV" "$IMG"
+
+parting mklabel "$PARTTABLE"
+
+if [ -n "$BOOTLOADERPART" ] && [ -n "$BOOTLOADERPARTSIZEM" ]; then
+	case "$ARCH" in
+		ppc*)
+			parting mkpart primary ext2 2048s $((BOOTLOADERPARTSIZEM + 1))MiB
+			CUR_BOUNDARY="$BOOTLOADERPARTSIZEM"
+			parting set 1 prep on
+			parting set 1 boot on
+			;;
+	esac
+fi
+
+if [ -n "$EFIPART" ]; then
+	EFIDEV="$EFIDEV$EFIPART"
+	if [ "$PARTTABLE" == gpt ]; then
+		parting mkpart fat32 2048s $(($EFIPARTSIZEM + 1))MiB
+	else
+		parting mkpart primary fat32 2048s $(($EFIPARTSIZEM + 1))MiB
+	fi
+	CUR_BOUNDARY="$EFIPARTSIZEM"
+	parting set 1 boot on
+	if [ "$PARTTABLE" == gpt ]; then
+		parting set 1 esp on
+	fi
+fi
+
+if [ -n "$BOOTPART" ]; then
+	BOOTDEV="$BLOCKDEV$BOOTPART"
+	mkpart "$BOOTSIZEM"
+fi
+
+# not ROOTSIZEM but "the rest"; somewhat non-trivial arithmetics lurk in parted
+mkpart
+
+kpartx -a -s "$LOOPDEV"
+LOOPROOT="/dev/mapper/$(basename "$LOOPDEV")p$ROOTPART"
+
+mkfs."$ROOTFSTYPE" "$LOOPROOT"
+
+if [ -n "$BOOTPART" ]; then
+	LOOPBOOT="/dev/mapper/$(basename "$LOOPDEV")p$BOOTPART"
+	mkfs."$BOOTFSTYPE" "$LOOPBOOT"
+fi
+
+if [ -n "$BOOTLOADERPART" ] && [ -n "$BOOTLOADERPARTSIZEM" ]; then
+	LOOPBOOTLOADER="/dev/mapper/$(basename "$LOOPDEV")p$BOOTLOADERPART"
+fi
+
+if [ -n "$EFIPART" ]; then
+	LOOPEFI="/dev/mapper/$(basename "$LOOPDEV")p$EFIPART"
+	mkfs.fat -F32 "$LOOPEFI"
+fi
+
+ROOTUUID="$(blkid -s UUID -o value -c /dev/null "$LOOPROOT")"
+if [ -n "$ROOTUUID" ]; then
+       ROOTDEV="UUID=$ROOTUUID"
+else
+       ROOTDEV="$LOOPROOT"
+fi
+
+if [ -n "$BOOTPART" ]; then
+	BOOTUUID="$(blkid -s UUID -o value -c /dev/null "$LOOPBOOT")"
+	if [ -n "$BOOTUUID" ]; then
+		BOOTDEV="UUID=$BOOTUUID"
+	fi
+fi
+
+if [ -n "$EFIPART" ]; then
+	EFIUUID="$(blkid -s UUID -o value -c /dev/null "$LOOPEFI")"
+	if [ -n "$EFIUUID" ]; then
+		EFIDEV="UUID=$EFIUUID"
+	fi
+fi
+
+# mount and populate it
+mkdir -pm755 "$ROOTFS"
+mount "$LOOPROOT" "$ROOTFS"
+
+if [ -n "$BOOTPART" ]; then
+	mkdir -pm700 "$BOOTFS"
+	mount "$LOOPBOOT" "$BOOTFS"
+fi
+
+if [ -n "$EFIPART" ]; then
+	mkdir -pm751 "$EFIPARTFS"
+	mount "$LOOPEFI" "$EFIPARTFS"
+fi
+
+tar -C "$ROOTFS" --numeric-owner -xf "$TAR"
+for i in /dev /proc /sys; do mount --bind "$i" "$ROOTFS$i"; done
+
+# loop device so lilo could work...
+if grep -qe "[[:space:]]/[[:space:]]" "$ROOTFS/etc/fstab"; then \
+	sed -i "s/LABEL=ROOT/$ROOTDEV/" "$ROOTFS/etc/fstab"
+else
+	echo "$ROOTDEV / $ROOTFSTYPE relatime 1 1" >> "$ROOTFS/etc/fstab"
+fi
+
+# target device at once
+if [ -n "$BOOTPART" ]; then
+	echo "$BOOTDEV /boot $BOOTFSTYPE defaults 1 2" >> "$ROOTFS/etc/fstab"
+fi
+if [ -n "$EFIPART" ]; then
+	echo "$EFIDEV /boot/efi vfat umask=0,quiet,showexec,iocharset=utf8,codepage=866 1 2" >> "$ROOTFS/etc/fstab"
+fi
+
+# Query ARCH in chroot and redefine arch-dependent variable
+ARCH="$(chroot "$ROOTFS" rpm --eval '%_host_cpu')"
+
+# NB: don't stick BOOTFS here, it has slightly different semantics
+pushd $ROOTFS/boot
+
+# 4.9.76-elbrus-def-alt1.11.1 -> def
+get_label() { echo "${1# *}" | sed -r 's,.*elbrus-([0-9a-z]+)-.*$,\1,'; }
+
+KVERSIONS=
+KVERSIONS="$(chroot "$ROOTFS" rpm -qa 'kernel-image*' \
+            --qf '%{installtime} %{version}-%{name}-%{release}\n' \
+        | sort -n \
+        | cut -f 2 -d ' ' \
+        | sed 's/kernel-image-//')"
+[ -n "$KVERSIONS" ] || fatal "unable to deduce kernel version"
+rm -f .origver
+
+# clean fstab
+sed -i "/LABEL=ROOT/d" "$ROOTFS/etc/fstab"
+# ...target device too
+sed -i "s,$LOOPROOT,$ROOTDEV," "$ROOTFS/etc/fstab"
+
+echo "** KVERSIONS=[$KVERSIONS]" >&2
+
+if [ "`echo $KVERSIONS | wc -w`" = 1 ]; then # 2+ labels
+	echo -e "default=`get_label $KVERSIONS`\n" >> boot.conf
+fi
+
+# FIXME: relies on particular (current) kernel package naming scheme
+for v in $KVERSIONS; do
+	l="`get_label "$v"`"
+	cat >> boot.conf <<EOF
+label=$l
+	partition=0
+	image=/image-$v
+	initrd=/initrd-$v.img
+	cmdline=console=ttyS0,115200 console=tty0 consoleblank=0 hardreset root=UUID=$ROOTUUID
+
+EOF
+done
+
+echo "** start of boot.conf"
+cat boot.conf
+echo "** end of boot.conf"
+
+popd
+
+# Update cmdline.txt for Raspberry Pi
+[ -f "$ROOTFS/boot/efi/cmdline.txt" ] &&
+    sed -i "s/LABEL=ROOT/$ROOTDEV/" "$ROOTFS/boot/efi/cmdline.txt"
+
+# Update extlinux.conf
+[ -f "$ROOTFS/boot/extlinux/extlinux.conf" ] &&
+    sed -i "s/LABEL=ROOT/$ROOTDEV/g" "$ROOTFS/boot/extlinux/extlinux.conf"
+
+# Setup bootloader
+case "$BOOTLOADER" in
+uboot)
+	parting set "$ROOTPART" boot on
+	;;
+lilo)
+	# configure and install bootloader
+	REGEXP='^.*: ([0-9]+) cylinders, ([0-9]+) heads, ([0-9]+) sectors/track*$'
+	set -- $(sfdisk -g "$LOOPDEV" | grep -E "$REGEXP" | sed -r "s@$REGEXP@\1 \2 \3@")
+
+	LILO_COMMON="lba32
+delay=1
+vga=0
+image=/boot/vmlinuz
+  initrd=/boot/initrd.img
+  append=\"root=$ROOTDEV rootdelay=3 console=tty1 console=ttyS0,115200n8\"
+  label=linux"
+
+	cat > "$ROOTFS"/etc/lilo-loop.conf <<-EOF
+	boot=$LOOPDEV
+	disk=$LOOPDEV
+	  bios=0x80
+	  cylinders=$1
+	  heads=$2
+	  sectors=$3
+	  partition=$LOOPROOT
+	  start=63
+	$LILO_COMMON
+	EOF
+
+	chroot "$ROOTFS" lilo -C /etc/lilo-loop.conf
+
+	cat > "$ROOTFS"/etc/lilo.conf <<-EOF
+	boot=$BLOCKDEV
+	$LILO_COMMON
+	EOF
+	;;
+grub-efi)
+	echo 'GRUB_DISABLE_OS_PROBER=true' >> "$ROOTFS"/etc/sysconfig/grub2
+	chroot "$ROOTFS" grub-mkconfig -o /boot/grub/grub.cfg
+	case "$ARCH" in
+		x86_64)
+			chroot "$ROOTFS" grub-install --target=i386-efi --recheck \
+			  --removable --uefi-secure-boot
+			chroot "$ROOTFS" grub-install --target=x86_64-efi --recheck \
+			  --removable --uefi-secure-boot
+			sed -i 's/initrd16/initrdefi/g' "$ROOTFS/boot/grub/grub.cfg"
+			sed -i 's/linux16/linuxefi/g' "$ROOTFS/boot/grub/grub.cfg"
+		;;
+		aarch64)
+			chroot "$ROOTFS" grub-install --target=arm64-efi --recheck \
+			  --removable --no-uefi-secure-boot
+		;;
+		armh)
+			chroot "$ROOTFS" grub-install --target=arm-efi --recheck \
+			  --removable --no-uefi-secure-boot
+		;;
+		riscv64)
+			chroot "$ROOTFS" grub-install --target=riscv64-efi --recheck \
+			  --removable --no-uefi-secure-boot
+	esac
+	sed -i '/GRUB_DISABLE_OS_PROBER=true/d' "$ROOTFS/etc/sysconfig/grub2"
+	;;
+grub)
+	echo 'GRUB_DISABLE_OS_PROBER=true' >> "$ROOTFS"/etc/sysconfig/grub2
+	chroot "$ROOTFS" grub-mkconfig -o /boot/grub/grub.cfg
+	case "$ARCH" in
+		*86*)
+			chroot "$ROOTFS" grub-install --target=i386-pc "$LOOPDEV"
+			sed -i 's/initrdefi/initrd16/g' "$ROOTFS/boot/grub/grub.cfg"
+			sed -i 's/linuxefi/linux16/g' "$ROOTFS/boot/grub/grub.cfg"
+		;;
+		ppc*)
+			[ -z "$LOOPBOOTLOADER" ] ||
+				chroot "$ROOTFS" grub-install --target=powerpc-ieee1275 \
+				--no-nvram "$LOOPBOOTLOADER"
+		;;
+	esac
+	sed -i '/GRUB_DISABLE_OS_PROBER=true/d' "$ROOTFS/etc/sysconfig/grub2"
+	;;
+esac
+
+if [ -n "$SUDO_USER" ]; then
+	chown "$SUDO_USER:$(id -g "$SUDO_USER")" "$IMG" ||:
+fi
+# maybe qemu interpreter was copied to chroot;
+# this is no longer necessary, remove
+rm -rf "$ROOTFS"/.host ||:

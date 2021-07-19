@@ -1,0 +1,40 @@
+# Startup
+rootfiles
+servicectl
+
+# Common
+acl
+coreutils
+glibc-nss
+glibc-utils
+man
+man-pages
+util-linux
+eject
+
+# Package management
+apt-repo
+aptitude
+
+# Partition management
+fdisk
+
+# Serial console
+agetty
+
+# Console mouse
+gpm
+
+# File management
+mc
+
+# Provisioning
+udpcast
+partclone
+
+# l10n
+glibc-locales
+
+# Misc
+rescue-launcher
+system-backup

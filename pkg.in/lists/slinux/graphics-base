@@ -1,0 +1,14 @@
+gimp@!riscv64
+gimp-plugin-gutenprint@!riscv64
+xsane-gimp2@!riscv64
+# inkscape
+gphoto2
+sane
+hplip-sane@!riscv64
+xsane@!riscv64
+
+ristretto
+gimagereader-qt5@!riscv64
+tesseract
+tesseract-langpack-ru
+tesseract-langpack-en

@@ -1,0 +1,7 @@
+samba-dc
+ldb-tools
+krb5-kinit
+bind-utils
+ldap-user-tools
+task-auth-ad-sssd
+gpupdate

@@ -1,0 +1,31 @@
+# overall
+dhrystone
+lmbench@X86
+procbench@X86
+# requires luajit
+sysbench@X86
+sysbench@aarch64
+whetstone
+
+# RAM
+bandwidth@X86
+stream-mem
+
+# disk subsystem
+bonnie
+bonnie++
+iozone
+fio
+ffsb
+
+# networking
+#dbench
+hammerhead
+#postal
+siege
+t50@X86
+wrk@X86
+
+# stresstesting/burn-in
+cpuburn@X86
+stress

@@ -1,0 +1,10 @@
+wget
+curl
+rsync
+apt
+fdisk
+vim-console
+nano
+mc
+nfs-utils
+system-backup

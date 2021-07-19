@@ -1,0 +1,15 @@
+#!/bin/sh
+# enable online repos if possible, just quit if list is absent
+
+repo_source='/etc/apt/sources.list.d/yandex.list'
+
+[ -z "$GLOBAL_ROOTFS_MAIN" ] || exit 0
+
+[ -s "$repo_source" ] || exit 0
+
+# regexps from alterator-pkg (via installer-feature-online-repo)
+prefix_re="[[:space:]]*rpm[[:space:]]\+\([^[:space:]]\+[[:space:]]\+\)\?"
+host_re="http:\/\/\([^[:space:]]\+\)[[:space:]]\+"
+updates_re="${prefix_re}${host_re}\([^[:space:]]\+\/\)\?"
+
+sed -i "s/^#\($updates_re\)/\1/" "$repo_source"

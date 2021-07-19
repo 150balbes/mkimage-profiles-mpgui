@@ -1,0 +1,35 @@
+gzip-utils
+lzip
+lzop
+p7zip
+pax
+rzip
+star@!E2K
+unrar
+unzip
+xbiso
+zpaq
+
+# parallel (de)compression
+pbzip2
+pigz
+plzip
+pxz
+
+# legacy
+arj
+cabextract
+ha
+lha
+mdbtools
+mscompress
+nomarch
+ncompress
+unace
+unarj
+#unzoo
+uudeview
+
+# recovery
+#gzrt
+lziprecover

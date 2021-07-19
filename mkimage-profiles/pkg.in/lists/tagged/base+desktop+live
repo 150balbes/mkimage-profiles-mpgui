@@ -1,8 +1,0 @@
-wget
-rsync
-apt
-fdisk
-vim-console
-nano
-mc
-nfs-utils
